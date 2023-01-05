@@ -1,0 +1,23 @@
+﻿
+Person
+* public int ID { get; set; } = -1; --> [Key]
+
+MacrixController
+* Injection przenieść do helpers z HttpGet?
+* Count - tak by liczył bez Deleted.
+(chyba można CountMain ograniczyć)
+
+* Controller tylko jako 'zamieniacz' JSON/Person, a całość w Model? Jak to jest w GrajCyganie?
+
+Backend:
+* Authorization/Authentication?
+* testy: Add, Find, Update, Delete
+* własny InMemory,
+Sekwnecja: empty - test czy Count = 0; /default - test czy Count = 1, test czy znajdzie Find, test czy znajdzie GetId, Delete - czy Count=0, czy znadzie by Id, by FIND
+Sekwencja: empty, add, add, testCOUNT, testGETBYID 1, BYID2, 
+
+FrontEnd:
+?
+
+
+https://www.nuget.org/packages/FileContextCore/
