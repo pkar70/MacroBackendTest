@@ -1,6 +1,7 @@
 ﻿using Macrix_Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 
 namespace Macrix_Backend.Models;
 
@@ -9,50 +10,52 @@ public class PersonsRepository :IPersonsRepository
 {
     private readonly MyDbContext _dbContext;
 
-    public PersonsRepository(MyDbContext dbContext)
+    public PersonsRepository(MyDbContext dbContext, bool noPersistence = false)
     {
         _dbContext = dbContext;
+        if(!noPersistence) _dbContext.LoadData();
     }
 
-    /// <summary>
-    /// get count of non-deleted, non-RODO-block records in database
-    /// </summary>
-    /// <returns>count of records</returns>
+    #region "helpers"
+
     public int Count()
     {
+        //_dbContext.LoadData();
         return _dbContext.Persons.Count(p => p.RODOblock.Year < 2000 && p.deleted.Year < 2000);
     }
 
-    /// <summary>
-    ///  for testing: simple way to add one, default, record
-    /// </summary>
-    /// <returns></returns>
+
     public void InitWithDefault()
     {
-        Person newPerson = new Person() { ApartmentNumber = "132", DateOfBirth = new DateTime(1970, 03, 25), FirstName = "ja", LastName = "Macrix", HouseNumber = "11a", ID = 0, PhoneNumber = "+48 (601) 12-34-56", PostalCode = "30-147", StreetName = "Nowosądecka", Town = "Kraków" };
+        if (GetPerson(0) != null) return;   // already have such item
+
+        Person newPerson = GetTestDefaultPerson();
+
+        Person? oldPerson = GetPerson(newPerson.ID);
+        if(oldPerson != null)
+            // we already have such, but deleted - so we 'undeleting' it
+            oldPerson.deleted = DateTime.MinValue;
+        else
         _dbContext.Persons.Add(newPerson);
+
         _dbContext.SaveChanges();
     }
 
-
     /// <summary>
-    /// try to find record for given persons
+    ///  get test record, used here and in TEST
     /// </summary>
-    /// <returns>null if not found, or Person record</returns>
-    private Person? FindPerson(string firstName, string lastName, DateTime dateOfBirth)
+    /// <returns></returns>
+    public Person GetTestDefaultPerson()
     {
-        if (CountItems(context) == 0) return null;
-        return context.Persons.Where(p => p.FirstName == firstName && p.LastName == lastName && p.DateOfBirth == dateOfBirth).FirstOrDefault();
+        return new Person() { ApartmentNumber = "132", DateOfBirth = new DateTime(1970, 03, 25), FirstName = "ja", LastName = "Macrix", HouseNumber = "11a", ID = 1, PhoneNumber = "+48 (601) 12-34-56", PostalCode = "30-147", StreetName = "Nowosądecka", Town = "Kraków" };
     }
 
-    /// <summary>
-    /// add new record to database, after some checking
-    /// </summary>
-    /// <param name="newPerson">Person to be added</param>
-    /// <returns>ID of new record, or negative value indicating error (-1: RODOblock, -2: user already exists)</returns>
-    private int AddPerson(MyDbContext context, Person newPerson)
+    #endregion
+
+    #region "Crud"
+    public int AddPerson(Person newPerson)
     {
-        Person? prevPerson = FindPerson(context, newPerson.FirstName, newPerson.LastName, newPerson.DateOfBirth);
+        Person? prevPerson = FindPerson(newPerson.FirstName, newPerson.LastName, newPerson.DateOfBirth);
 
         if (prevPerson != null)
         {
@@ -62,59 +65,110 @@ public class PersonsRepository :IPersonsRepository
         }
 
         int id = 0;
-        id = context.Persons.Max(p => p.ID);
+        if(_dbContext.Persons.Count() != 0)
+            id = _dbContext.Persons.Max(p => p.ID);
 
-        newPerson.ID = id;
-        context.Persons.Add(newPerson);
+        id = Math.Max(id, 1);   // ID=1 is reserved
 
-        return id;
+        newPerson.ID = id + 1;
+        _dbContext.Persons.Add(newPerson);
+
+        _dbContext.SaveChanges();
+
+        return newPerson.ID;
     }
 
-    /// <summary>
-    /// mark as removed record with this ID
-    /// </summary>
-    /// <param name="id">ID of record to be deleted</param>
-    /// <returns>true if record was found and deleted, else: false </returns>
-    private bool DeletePerson(MyDbContext context, int id)
+    #endregion
+
+    #region "cRud"
+
+    public Person? FindPerson(string firstName, string lastName, DateTime dateOfBirth)
     {
-        if (CountItems(context) == 0) return false;
-
-        Person? person = context.Persons.Where(p => p.ID == id).FirstOrDefault();
-        if (person == null) return false;
-
-        if (person.IsRodoBlocked()) return true;
-        if (person.IsDeleted()) return true;
-
-        //context.Persons.Remove(persons);
-
-        person.deleted = DateTime.UtcNow;
-        //context.Persons.Add(persons);
-
-        context.SaveChanges();
-
-        return true;
+        if(Count() == 0) return null;
+        Person? person = _dbContext.Persons.Where(p => p.FirstName == firstName && p.LastName == lastName && p.DateOfBirth == dateOfBirth).FirstOrDefault();
+        if(person == null) return null;
+        if (person.IsDeleted()) return null;
+        if (person.IsRodoBlocked()) return null;
+        return person;
     }
 
-    /// <summary>
-    /// update record
-    /// </summary>
-    /// <param name="newPerson">new user data</param>
-    /// <returns>true if record was found and updated, else: false </returns>
-    private bool UpdatePerson(MyDbContext context, Person newPerson)
+    public Person? GetPerson(int id)
     {
-        if (CountItems(context) == 0) return false;
+        return _dbContext.Persons.Where(p => p.ID == id).FirstOrDefault();
+    }
 
-        Person? currPerson = context.Persons.Where(p => p.ID == newPerson.ID).FirstOrDefault();
+    public List<Person> GetPageOfResults(int id)
+    {
+        return _dbContext.Persons.Where(p => p.ID >= id && p.RODOblock.Year < 2000 && p.deleted.Year < 2000).Take(25).ToList();
+    }
+
+    #endregion
+
+    #region "crUd"
+    public bool UpdatePerson(Person newPerson)
+    {
+        if (Count() == 0) return false;
+
+        Person? currPerson = _dbContext.Persons.Where(p => p.ID == newPerson.ID).FirstOrDefault();
         if (currPerson == null) return false;
 
         if (currPerson.IsRodoBlocked()) return false;
         if (currPerson.IsDeleted()) return false;
 
-        context.Persons.Remove(currPerson);
-        context.Persons.Add(newPerson);
+        _dbContext.Persons.Remove(currPerson);
+        _dbContext.Persons.Add(newPerson);
 
-        context.SaveChanges();
+        _dbContext.SaveChanges();
 
         return true;
     }
+
+    #endregion
+
+    #region "cruD"
+
+    public bool DeletePerson(int id)
+    {
+        if (Count() == 0) return false;
+
+        Person? person = _dbContext.Persons.Where(p => p.ID == id).FirstOrDefault();
+        if (person == null) return false;
+
+        if (person.IsRodoBlocked()) return true;
+        if (person.IsDeleted()) return true;
+
+        person.deleted = DateTime.UtcNow;
+
+        _dbContext.SaveChanges();
+
+        return true;
+    }
+
+    public bool SetRODO(int id)
+    {
+        // RODO-block can be set also on Deleted records!
+
+        Person? person = _dbContext.Persons.Where(p => p.ID == id).FirstOrDefault();
+        if (person == null) return false;
+
+        if (person.IsRodoBlocked()) return true;
+
+        person.RODOblock = DateTime.UtcNow;
+
+        // remove all attributes we should not deal with in future
+        person.StreetName = "";
+        person.HouseNumber = "";
+        person.ApartmentNumber = null;
+        person.PostalCode = "";
+        person.Town = "";
+        person.PhoneNumber = "";
+
+        _dbContext.SaveChanges();
+
+        return true;
+
+    }
+
+    #endregion
+
 }

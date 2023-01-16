@@ -1,0 +1,103 @@
+﻿<Window x:Class="FrontEnd.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FrontEnd"
+        mc:Ignorable="d"
+        Title="Macrix FrontEnd" Height="450" Width="800">
+
+    <Window.Resources>
+        <local:ConvertAge x:Key="ConvertAge"/>
+        <local:ConvertNegBool x:Key="ConvertNegBool"/>
+    </Window.Resources>
+
+    <Grid Margin="5,5,5,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" Name="for_link_connection" />
+            <RowDefinition Height="Auto"  Name="for_basic_buttons_commands" />
+            <RowDefinition Height="Auto"  Name="for_search" />
+            <RowDefinition Height="*" Name="for_items_list" />
+            <RowDefinition Height="Auto"  Name="for_SaveCancel" />
+        </Grid.RowDefinitions>
+
+        <Grid Name="row_link_connection">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Base URI: " />
+            <TextBox Name="uiBaseUri" HorizontalAlignment="Stretch" MinWidth="200" TextChanged="uiBaseUri_TextChanged"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Name="row_basic_buttons_commands" Grid.Row="1">
+            <Button Content=" default " IsEnabled="False" Click="uiGetDefault_Clicked" Name="uiGetDefault"/>
+            <Button Content=" version " Margin="15,0,15,0" IsEnabled="False" Click="uiGetVersion_Clicked"  Name="uiGetVersion"/>
+            <Button Content=" count " IsEnabled="False" Click="uiGetCount_Clicked"  Name="uiGetCount"/>
+            <Button Content=" page " IsEnabled="False" Click="uiGetPage_Clicked" Name="uiGetPage" Margin="15,0,15,0" />
+        </StackPanel>
+
+        <Button Content=" new " Grid.Row="2" HorizontalAlignment="Right" Click="uiAddPerson_Click" Name="uiAddButton" />
+
+        <ListView Grid.Row="3" Name="uiListItems" Margin="2,5,5,5" HorizontalContentAlignment="Stretch"  >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment"  Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid  HorizontalAlignment="Stretch" Margin="0,5,0,0"  >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" Name="for_ID_data"/>
+                            <RowDefinition Height="Auto" Name="for_address_1"/>
+                            <RowDefinition Height="Auto" Name="for_address_2"/>
+                            <RowDefinition Height="Auto" Name="for_phone"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Name="row_ID_data">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox Text="{Binding FirstName}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch"  ToolTip="First name" IsEnabled="{Binding editable}"/>
+                            <TextBox Text="{Binding LastName }" FontWeight="Bold" FontSize="18" HorizontalAlignment="Stretch" Grid.Column="1"  ToolTip="Last name" IsEnabled="{Binding editable}"/>
+                            <DatePicker Grid.Column="2" SelectedDate="{Binding DateOfBirth }" Margin="5,0,5,0"  ToolTip="Date of birth" IsEnabled="{Binding editable}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Age, Converter={StaticResource ConvertAge}}" ToolTip="(this is calculated)"/>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Name="row_address_1" Orientation="Horizontal">
+                            <TextBox Text="{Binding StreetName}" Width="200"  ToolTip="Street name" IsEnabled="{Binding editable}"/>
+                            <TextBox Text="{Binding HouseNumber }" Margin="5,0,5,0" Width="50"  ToolTip="House number" IsEnabled="{Binding editable}"/>
+                            <TextBlock Text="/" />
+                            <TextBox Text="{Binding ApartmentNumber }" Width="50"  ToolTip="Apartment number" IsEnabled="{Binding editable}"/>
+                            <TextBlock Text="   Zip: " />
+                            <TextBox Text="{Binding PostalCode}" Width="70" InputScope="PostalCode" ToolTip="Zip code" IsEnabled="{Binding editable}"/>
+                            <TextBox Text="{Binding Town }" Width="200" Margin="5,0,5,0" ToolTip="Town" IsEnabled="{Binding editable}"/>
+                        </StackPanel>
+
+                        <TextBox Grid.Row="3" Text="{Binding PhoneNumber }" Width="150" InputScope="TelephoneNumber" ToolTip="Phone number" HorizontalAlignment="Left"  IsEnabled="{Binding editable}"/>
+                        
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add" Click="uiAddPerson_Click" />
+                                <MenuItem Header="Edit" Click="uiAllowEdits_Click" IsEnabled="{Binding editable, Converter={StaticResource ConvertNegBool} }"/>
+                                <MenuItem Header="Delete" Click="uiDelete_Click" />
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Button Content=" Save " Grid.Row="4" HorizontalAlignment="Left" Click="uiSave_Clik" Name="uiSave" IsEnabled="False" Margin="25,0,0,0" />
+        <Button Content=" Cancel " Grid.Row="4" HorizontalAlignment="Right" Click="uiCancel_Clik" Name="uiCancel" IsEnabled="False" Margin="0,0,25,0"/>
+
+    </Grid>
+</Window>

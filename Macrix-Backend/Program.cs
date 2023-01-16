@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<Macrix_Backend.Models.MyDbContext>();
+// Singleton - for better performance
+builder.Services.AddDbContext<Macrix_Backend.Models.MyDbContext>(ServiceLifetime.Singleton);
 builder.Services.AddSingleton<IPersonsRepository, PersonsRepository>();
 
 builder.Services.AddApiVersioning(opt =>
@@ -24,14 +25,18 @@ builder.Services.AddApiVersioning(opt =>
 });
 
 
-//builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-//   .AddNegotiate();
+#if false
+// for simple test project, authorization can be switched-off
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    // By default, all incoming requests will be authorized according to the default policy.
-//    options.FallbackPolicy = options.DefaultPolicy;
-//});
+builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
+   .AddNegotiate();
+
+builder.Services.AddAuthorization(options =>
+{
+    // By default, all incoming requests will be authorized according to the default policy.
+    options.FallbackPolicy = options.DefaultPolicy;
+});
+#endif 
 
 var app = builder.Build();
 

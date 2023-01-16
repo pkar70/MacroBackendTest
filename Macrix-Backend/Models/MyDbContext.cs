@@ -8,14 +8,30 @@ namespace Macrix_Backend.Models
 {
     public class MyDbContext : DbContext
     {
+
+        private string _databaseName = "macrix";
+
+        /// <summary>
+        /// use with parameter = uniq name, if you want to have concurrent databases
+        /// </summary>
+        /// <param name="databaseName"></param>
+        public MyDbContext(string databaseName = "macrix")
+        {
+            _databaseName = databaseName;
+        }
+
         public virtual DbSet<Person> Persons { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseInMemoryDatabase("macrix");
+                optionsBuilder.UseInMemoryDatabase(_databaseName);
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
         }
 
         private string _JsonFilename = "";
@@ -27,8 +43,11 @@ namespace Macrix_Backend.Models
             return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);  // for app
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public void LoadData()
         {
+            // we already read data
+            if (_JsonFilename != "") return;
+
             string foldername = DataFolder();
             _JsonFilename = Path.Combine(foldername, "macrix");
             Directory.CreateDirectory(_JsonFilename);
@@ -53,10 +72,16 @@ namespace Macrix_Backend.Models
 
             if (JsonList is null) return;
 
+            //modelBuilder.Entity<Person>().HasData(new List<Person>() { JsonList };
+
             foreach (var person in JsonList)
             {
+
                 Persons.Add(person);
             }
+
+            base.SaveChanges();
+
         }
 
         public override int SaveChanges()
@@ -68,6 +93,8 @@ namespace Macrix_Backend.Models
 
         void SaveJson()
         {
+            if (_JsonFilename == "") return;
+
             var JsonList = new List<Person>();
 
             foreach (var person in Persons)

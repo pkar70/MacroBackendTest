@@ -30,7 +30,7 @@ namespace Macrix_Backend.Models.Entities
 
         // mine
 
-        [Key]
+        [Required]
         public int ID { get; set; } = -1;
 
         // mine - simple additions for 'RODO'; it is not full support of RODO requirements!
@@ -53,6 +53,16 @@ namespace Macrix_Backend.Models.Entities
         {
             return deleted.Year > 2000;
         }
+
+        public Person Clone()
+        {
+            string sTxt = DumpAsJSON();
+            Person? oNew = Newtonsoft.Json.JsonConvert.DeserializeObject<Person>(sTxt);
+            if (oNew == null)
+                throw new Exception("I cannot be null!");
+            return oNew;
+        }
+
 
     }
 }
