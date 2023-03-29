@@ -1,7 +1,7 @@
 
 
-using Macrix_Backend.Models;
-using Macrix_Backend.Models.Entities;
+using MacroBackendTest_Backend.Models;
+using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestBackendRepository;

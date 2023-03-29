@@ -1,5 +1,5 @@
-﻿using Macrix_Backend.Models;
-using Macrix_Backend.Models.Entities;
+﻿using MacroBackendTest_Backend.Models;
+using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using Microsoft.EntityFrameworkCore;
@@ -9,17 +9,17 @@ using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Macrix_Backend.Controllers;
+namespace MacroBackendTest_Backend.Controllers;
 
 [ApiVersion("1.0")]
 [Route("api")]
 [ApiController]
-public class MacrixController : ControllerBase
+public class MacroBackendTestController : ControllerBase
 {
 
     private IPersonsRepository _repository;
 
-    public MacrixController(IPersonsRepository repository)
+    public MacroBackendTestController(IPersonsRepository repository)
     {
         _repository = repository;
     }

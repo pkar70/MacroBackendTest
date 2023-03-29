@@ -1,21 +1,21 @@
 ﻿
-using Macrix_Backend.Models.Entities;
+using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Newtonsoft.Json;
 
-namespace Macrix_Backend.Models
+namespace MacroBackendTest_Backend.Models
 {
     public class MyDbContext : DbContext
     {
 
-        private string _databaseName = "macrix";
+        private string _databaseName = "macrox";
 
         /// <summary>
         /// use with parameter = uniq name, if you want to have concurrent databases
         /// </summary>
         /// <param name="databaseName"></param>
-        public MyDbContext(string databaseName = "macrix")
+        public MyDbContext(string databaseName = "macrox")
         {
             _databaseName = databaseName;
         }
@@ -49,7 +49,7 @@ namespace Macrix_Backend.Models
             if (_JsonFilename != "") return;
 
             string foldername = DataFolder();
-            _JsonFilename = Path.Combine(foldername, "macrix");
+            _JsonFilename = Path.Combine(foldername, "macrox");
             Directory.CreateDirectory(_JsonFilename);
             _JsonFilename = Path.Combine(_JsonFilename, "database.json");
 

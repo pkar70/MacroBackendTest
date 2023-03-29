@@ -1,9 +1,9 @@
-﻿using Macrix_Backend.Models.Entities;
+﻿using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 
-namespace Macrix_Backend.Models;
+namespace MacroBackendTest_Backend.Models;
 
 
 public class PersonsRepository :IPersonsRepository
@@ -47,7 +47,7 @@ public class PersonsRepository :IPersonsRepository
     /// <returns></returns>
     public Person GetTestDefaultPerson()
     {
-        return new Person() { ApartmentNumber = "132", DateOfBirth = new DateTime(1970, 03, 25), FirstName = "ja", LastName = "Macrix", HouseNumber = "11a", ID = 1, PhoneNumber = "+48 (601) 12-34-56", PostalCode = "30-147", StreetName = "Nowosądecka", Town = "Kraków" };
+        return new Person() { ApartmentNumber = "132", DateOfBirth = new DateTime(1970, 03, 25), FirstName = "ja", LastName = "Macrox", HouseNumber = "11a", ID = 1, PhoneNumber = "+48 (601) 12-34-56", PostalCode = "30-147", StreetName = "Nowosądecka", Town = "Kraków" };
     }
 
     #endregion

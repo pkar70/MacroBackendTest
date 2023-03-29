@@ -1,4 +1,4 @@
-using Macrix_Backend.Models;
+using MacroBackendTest_Backend.Models;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Singleton - for better performance
-builder.Services.AddDbContext<Macrix_Backend.Models.MyDbContext>(ServiceLifetime.Singleton);
+builder.Services.AddDbContext<MacroBackendTest_Backend.Models.MyDbContext>(ServiceLifetime.Singleton);
 builder.Services.AddSingleton<IPersonsRepository, PersonsRepository>();
 
 builder.Services.AddApiVersioning(opt =>

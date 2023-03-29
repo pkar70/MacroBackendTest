@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Macrix_Backend</RootNamespace>
+    <RootNamespace>MacroBackendTest_Backend</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

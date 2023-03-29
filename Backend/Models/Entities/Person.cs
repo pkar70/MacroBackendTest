@@ -1,7 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace Macrix_Backend.Models.Entities
+namespace MacroBackendTest_Backend.Models.Entities
 {
     public class Person
     {

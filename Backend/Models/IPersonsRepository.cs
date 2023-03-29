@@ -1,7 +1,7 @@
-﻿using Macrix_Backend.Models.Entities;
+﻿using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Macrix_Backend.Models;
+namespace MacroBackendTest_Backend.Models;
 
 public interface IPersonsRepository
 {

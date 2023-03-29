@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Macrix-Backend\Backend.csproj", "{E9C1608A-AEC2-4F7F-8D6D-49CFC484CF16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.csproj", "{E9C1608A-AEC2-4F7F-8D6D-49CFC484CF16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBackendRepository", "TestBackendRepository\TestBackendRepository.csproj", "{55965D43-B405-49F9-B780-EA4C61DB05ED}"
 EndProject

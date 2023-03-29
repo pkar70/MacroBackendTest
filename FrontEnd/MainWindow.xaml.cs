@@ -1,4 +1,4 @@
-﻿using Macrix_Backend.Models.Entities;
+﻿using MacroBackendTest_Backend.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using NuGet.Protocol;
 using System;
